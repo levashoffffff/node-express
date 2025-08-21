@@ -1,6 +1,9 @@
 const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars');
+const homeRoutes = require('./routes/home');
+const addRoutes = require('./routes/add');
+const coursesRouter = require('./routes/courses');
 
 const app = express();
 
@@ -16,27 +19,13 @@ app.set('views', 'views');
 //Зарегистрировали папку как публичную
 app.use(express.static('public'));
 
-//Для обработки get запроса
-app.get('/', (req, res) => {
-    res.render('index', {
-        title: 'Главная страница',
-        isHome: true
-    })
-})
+//Middleware для получения данных с форм
+app.use(express.urlencoded({extended: true}));
 
-app.get('/courses', (req, res) => {
-    res.render('courses', {
-        title: 'Курсы',
-        isCourses: true
-    });
-})
-
-app.get('/add', (req, res) => {
-    res.render('add', {
-        title: 'Добавить курс',
-        isAdd: true
-    });
-})
+//Регистируем роуты
+app.use('/', homeRoutes);
+app.use('/add', addRoutes);
+app.use('/courses', coursesRouter);
 
 const PORT = process.env.PORT || 3000;
 
