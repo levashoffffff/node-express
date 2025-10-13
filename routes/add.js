@@ -1,27 +1,39 @@
+// Импортируем Router из express для создания модульных обработчиков маршрутов
 const { Router } = require('express');
+// Импортируем модель Course для взаимодействия с коллекцией курсов в базе данных
 const Course = require('../models/course');
+// Создаем экземпляр роутера
 const router = Router();
 
+// Маршрут для отображения страницы добавления нового курса
 router.get('/', (req, res) => {
+    // Рендерим страницу 'add'
     res.render('add', {
-        title: 'Добавить курс',
-        isAdd: true
+        title: 'Добавить курс', // Заголовок страницы
+        isAdd: true // Флаг для выделения активной ссылки в навигации
     });
-})
+});
 
+// Маршрут для обработки POST-запроса на добавление нового курса
 router.post('/', async (req, res) => {
+    // Создаем новый экземпляр модели Course с данными из тела запроса
     const course = new Course({
-        title: req.body.title,
-        price: req.body.price,
-        img: req.body.img
-    })
+        title: req.body.title, // Название курса
+        price: req.body.price, // Цена курса
+        img: req.body.img, // URL изображения курса
+        userId: req.user // ID пользователя, добавившего курс
+    });
 
     try {
+        // Асинхронно сохраняем новый курс в базе данных
         await course.save();
+        // Перенаправляем пользователя на страницу со списком курсов
         res.redirect('/courses');
     } catch (e) {
+        // В случае ошибки выводим ее в консоль
         console.log(e);
     }
-})
+});
 
+// Экспортируем роутер для использования в основном файле приложения
 module.exports = router;
